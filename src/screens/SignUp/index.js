@@ -9,11 +9,11 @@ import {
   TouchableHighlight,
 } from 'react-native';
 
-//import ImagePicker from 'react-native-image-picker';
-//import RNFetchBlob from 'react-native-fetch-blob';
+import ImagePicker from 'react-native-image-picker';
+import RNFetchBlob from 'react-native-fetch-blob';
 
-//window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest;
-//window.Blob = RNFetchBlob.polyfill.Blob;
+window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest;
+window.Blob = RNFetchBlob.polyfill.Blob;
 
 import {
   editAvatar,
@@ -77,7 +77,7 @@ export class SignUp extends Component {
           <Text style={textInformacoesPessoais}>Informações Pessoais</Text>
         </View>
         <View style={viewPrimeiraFaseCadastro}>
-          {/* <View style={viewAvatar}>
+          <View style={viewAvatar}>
             <Image style={avatar} source={this.props.avatar} />
             <View style={viewButtonAddFoto}>
               <TouchableHighlight
@@ -87,7 +87,7 @@ export class SignUp extends Component {
                 <Text style={textAddFoto}>ADICIONAR OU ALTERAR FOTO</Text>
               </TouchableHighlight>
             </View>
-          </View>*/}
+          </View>
           <View style={viewCadastro}>
             <TextInput
               placeholder="Digite seu nome"
@@ -188,11 +188,12 @@ export class SignUp extends Component {
                 this,
                 this.props.setErroEmail,
                 this.props.setErroSenha,
-
+                this.props.avatar,
                 this.props.nome,
                 this.props.email,
                 this.props.senha,
                 this.props.confirmarSenha,
+                this.props.uid,
               )
             }>
             <Text style={txtBtnCadastrar}>Cadastrar</Text>
@@ -270,7 +271,7 @@ const addImg = objeto => {
 const mapStateToProps = state => {
   return {
     status: state.auth.status,
-
+    avatar: state.auth.avatar,
     nome: state.auth.nome,
     email: state.auth.email,
     erroEmail: state.auth.erroEmail,
@@ -284,7 +285,7 @@ const SignUpConnection = connect(
   mapStateToProps,
   {
     editNome,
-
+    editAvatar,
     editNome,
     editEmail,
     setErroEmail,

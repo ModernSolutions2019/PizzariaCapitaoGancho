@@ -1,6 +1,5 @@
 import firebase from '../FirebaseConnection';
 
-import ImagePicker from 'react-native-image-picker';
 import RNFetchBlob from 'react-native-fetch-blob';
 
 window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest;
@@ -63,43 +62,20 @@ export const cadastrar = (
   objeto,
   erroEmail,
   erroSenha,
+  avatarFoto,
   nome,
   email,
   senha,
   confirmarSenha,
 ) => {
   return dispatch => {
+    let uid;
     firebase
       .auth()
       .createUserWithEmailAndPassword(email, senha)
       .then(() => {
-        let uid = firebase.auth().currentUser.uid;
+        uid = firebase.auth().currentUser.uid;
 
-        /*let uri = avatarFoto.uri.replace('file://', '');
-
-        let avatar = firebase
-          .storage()
-          .ref()
-          .child('Clientes')
-          .child(`${uid}.jpg`);
-
-        let mime = 'image/jpeg';
-
-        RNFetchBlob.fs
-          .readFile(uri, 'base64')
-          .then(data => {
-            return RNFetchBlob.polyfill.Blob.build(data, {
-              type: `${mime};BASE64`,
-            });
-          })
-          .then(blob => {
-            avatar.put(blob, {contentType: mime}).on(
-              'state_changed',
-              snapshot => {},
-              error => {
-                alert(error.code);
-              },
-              () => {*/
         firebase
           .database()
           .ref('Clientes')
@@ -115,9 +91,6 @@ export const cadastrar = (
             uid,
           },
         });
-        //     },
-        //  );
-        //  });
       })
       .catch(error => {
         switch (error.code) {
@@ -138,6 +111,35 @@ export const cadastrar = (
             break;
         }
       });
+
+    if (uid != '') {
+      let uri = avatarFoto.uri.replace('file://', '');
+
+      let avatar = firebase
+        .storage()
+        .ref()
+        .child('Clientes')
+        .child(`${firebase.auth().currentUser.uid}.jpg`);
+
+      let mime = 'image/jpeg';
+
+      RNFetchBlob.fs
+        .readFile(uri, 'base64')
+        .then(data => {
+          return RNFetchBlob.polyfill.Blob.build(data, {
+            type: mime + ';BASE64',
+          });
+        })
+        .then(blob => {
+          avatar.put(blob, {contentType: mime}).on(
+            'state_changed',
+            snapshot => {},
+            error => {
+              alert(error.code);
+            },
+          );
+        });
+    }
   };
 };
 

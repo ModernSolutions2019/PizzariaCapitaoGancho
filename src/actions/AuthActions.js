@@ -69,12 +69,38 @@ export const cadastrar = (
   confirmarSenha,
 ) => {
   return dispatch => {
-    let uid;
     firebase
       .auth()
       .createUserWithEmailAndPassword(email, senha)
       .then(() => {
-        uid = firebase.auth().currentUser.uid;
+        let uid = firebase.auth().currentUser.uid;
+
+        let uri = avatarFoto.uri.replace('file://', '');
+
+        let avatar = firebase
+          .storage()
+          .ref()
+          .child('Clientes')
+          .child(`${uid}.jpg`);
+
+        let mime = 'image/jpeg';
+
+        RNFetchBlob.fs
+          .readFile(uri, 'base64')
+          .then(data => {
+            return RNFetchBlob.polyfill.Blob.build(data, {
+              type: mime + ';BASE64',
+            });
+          })
+          .then(blob => {
+            avatar.put(blob, {contentType: mime}).on(
+              'state_changed',
+              snapshot => {},
+              error => {
+                alert(error.code);
+              },
+            );
+          });
 
         firebase
           .database()
@@ -111,35 +137,6 @@ export const cadastrar = (
             break;
         }
       });
-
-    if (uid != '') {
-      let uri = avatarFoto.uri.replace('file://', '');
-
-      let avatar = firebase
-        .storage()
-        .ref()
-        .child('Clientes')
-        .child(`${firebase.auth().currentUser.uid}.jpg`);
-
-      let mime = 'image/jpeg';
-
-      RNFetchBlob.fs
-        .readFile(uri, 'base64')
-        .then(data => {
-          return RNFetchBlob.polyfill.Blob.build(data, {
-            type: mime + ';BASE64',
-          });
-        })
-        .then(blob => {
-          avatar.put(blob, {contentType: mime}).on(
-            'state_changed',
-            snapshot => {},
-            error => {
-              alert(error.code);
-            },
-          );
-        });
-    }
   };
 };
 

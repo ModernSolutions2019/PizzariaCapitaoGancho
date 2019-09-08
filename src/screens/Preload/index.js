@@ -5,7 +5,10 @@ import {NavigationActions, StackActions} from 'react-navigation';
 
 import Logo from '../../Components/Logo/index';
 
-import {verificarLogin} from '../../actions/AuthActions';
+import {verificarLogin, editUid} from '../../actions/AuthActions';
+
+import {getNome, editPizzas} from '../../actions/UserActions';
+
 import {connect} from 'react-redux';
 
 class Preload extends Component {
@@ -19,17 +22,16 @@ class Preload extends Component {
   }
 
   componentDidMount() {
-    if (this.props.status == 2) {
-      trocarTela(this, 2, 'Home');
-    } else {
+    trocarTela(this, 2, 'Home');
+    if (this.props.uid != '') {
       trocarTela(this, 1, 'SecondRoute');
     }
   }
 
   componentDidUpdate() {
-    if (this.props.status == 2) {
-      trocarTela(this, 2, 'Home');
-    } else {
+    trocarTela(this, 2, 'Home');
+    if (this.props.uid != '') {
+      this.props.getNome();
       trocarTela(this, 1, 'SecondRoute');
     }
   }
@@ -63,13 +65,15 @@ const trocarTela = (objeto, numeroStatus, rota) => {
 
 const mapStateToProps = state => {
   return {
+    pizzas: state.user.pizzas,
+    uid: state.auth.uid,
     status: state.auth.status,
   };
 };
 
 const PreloadConnection = connect(
   mapStateToProps,
-  {verificarLogin},
+  {editUid, verificarLogin, editPizzas, getNome},
 )(Preload);
 
 export default PreloadConnection;

@@ -4,31 +4,28 @@ import {
   View,
   Image,
   Text,
+  FlatList,
   StyleSheet,
   TextInput,
   TouchableHighlight,
 } from 'react-native';
 
-import {getNome, editPizzas, adicionarPizza} from '../../actions/UserActions';
-
-import {editUid} from '../../actions/AuthActions';
+import {getNome} from '../../actions/UserActions';
 
 import {connect} from 'react-redux';
-import ModalAddPizzas from '../../Components/ModalAddPizzas/ModalAddPizzas';
 
 export class UserInfo extends Component {
   static navigationOptions = {
-    title: 'Informações pessoais',
+    title: 'Ranking',
   };
   constructor(props) {
     super(props);
-    this.props.editPizzas(this.props.pizzas);
+    this.state = {};
   }
 
   render() {
     const {
       view,
-      viewModal,
       viewTextNome,
       textNome,
       viewConteudo,
@@ -41,43 +38,10 @@ export class UserInfo extends Component {
       textPosicao,
       viewTextRanking,
       viewTextPizzas,
-      viewAdicionarPizza,
-      toAdicionarPizza,
-      textAdicionarPizza,
     } = styles;
     return (
       <View style={view}>
-        <View style={viewCabecalho}>
-          <View style={viewTextNome}>
-            <Text style={textNome}>Nome:</Text>
-            <Text style={valorNome}>{this.props.nome}</Text>
-          </View>
-        </View>
-
-        <View style={viewConteudo}>
-          <View style={viewTextConsumo}>
-            <Text style={textConsumo}>Consumo</Text>
-            <View style={viewTextPizzas}>
-              <Text style={textQntPizzas}>{this.props.pizzas}</Text>
-              <Text style={textPizzas}>Pizzas</Text>
-            </View>
-          </View>
-          <View style={viewTextRanking}>
-            <Text style={textConsumo}>Posição</Text>
-            <Text style={textPosicao}>1º Lugar</Text>
-          </View>
-        </View>
-
-        <View style={viewAdicionarPizza}>
-          <TouchableHighlight
-            underlayColor={'#FF4500'}
-            style={toAdicionarPizza}
-            onPress={() => {
-              this.props.adicionarPizza(this.props.uid, this.props.pizzas);
-            }}>
-            <Text style={textAdicionarPizza}>+</Text>
-          </TouchableHighlight>
-        </View>
+        <FlatList />
       </View>
     );
   }
@@ -85,15 +49,13 @@ export class UserInfo extends Component {
 
 const mapStateToProps = state => {
   return {
-    uid: state.auth.uid,
-    pizzas: state.user.pizzas,
     nome: state.user.nome,
   };
 };
 
 const UserInfoConnection = connect(
   mapStateToProps,
-  {getNome, editPizzas, editUid, adicionarPizza},
+  {getNome},
 )(UserInfo);
 
 export default UserInfoConnection;
@@ -168,24 +130,5 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     textAlign: 'center',
     color: '#27408B',
-  },
-  viewAdicionarPizza: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  toAdicionarPizza: {
-    borderColor: '#27408B',
-    borderWidth: 2,
-    borderRadius: 20,
-    backgroundColor: '#fafafa',
-  },
-  textAdicionarPizza: {
-    marginHorizontal: 12,
-    marginVertical: 0,
-    color: '#27408B',
-    fontWeight: 'bold',
-    textAlign: 'center',
-    fontSize: 30,
   },
 });

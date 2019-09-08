@@ -7,6 +7,7 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Keyboard,
 } from 'react-native';
 
 import ImagePicker from 'react-native-image-picker';
@@ -24,6 +25,7 @@ import {
   setErroSenha,
   editConfirmarSenha,
   cadastrar,
+  setErroGeral,
 } from '../../actions/AuthActions';
 
 import {connect} from 'react-redux';
@@ -41,12 +43,12 @@ export class SignUp extends Component {
       bordaConfirmarSenha: 4,
       bordaEmail: 4,
       bordaSenha: 4,
-      selection: {start: 0, end: 0},
     };
   }
 
   componentDidUpdate() {
     if (this.props.status == 1) {
+      Keyboard.dismiss();
       this.props.navigation.navigate('SecondRoute');
     }
   }
@@ -73,9 +75,9 @@ export class SignUp extends Component {
     } = styles;
     return (
       <ScrollView style={view}>
-        <View style={viewTextInformacoesPessoais}>
+        {/*<View style={viewTextInformacoesPessoais}>
           <Text style={textInformacoesPessoais}>Informações Pessoais</Text>
-        </View>
+    </View>*/}
         <View style={viewPrimeiraFaseCadastro}>
           <View style={viewAvatar}>
             <Image style={avatar} source={this.props.avatar} />
@@ -282,6 +284,7 @@ const mapStateToProps = state => {
     senha: state.auth.senha,
     erroSenha: state.auth.erroSenha,
     confirmarSenha: state.auth.confirmarSenha,
+    erroGeralCadastro: state.auth.erroGeralCadastro,
   };
 };
 
@@ -297,6 +300,7 @@ const SignUpConnection = connect(
     setErroSenha,
     editConfirmarSenha,
     cadastrar,
+    setErroGeral,
   },
 )(SignUp);
 
@@ -323,15 +327,15 @@ const styles = StyleSheet.create({
   },
   estiloBotaoCadastrar: {
     borderColor: '#27408B',
-    borderWidth: 2,
+    borderWidth: 4,
     borderRadius: 20,
     margin: 10,
     padding: 10,
-    backgroundColor: '#00BFFF',
+    backgroundColor: '#fffafa',
   },
   txtBtnCadastrar: {
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#FF4500',
     textAlign: 'center',
     fontSize: 20,
   },
@@ -363,6 +367,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     margin: 10,
+
     flex: 3,
   },
   viewPrimeiraFaseCadastro: {
@@ -379,9 +384,12 @@ const styles = StyleSheet.create({
   },
   avatar: {
     marginBottom: 6,
-    height: 140,
-    width: 140,
-    backgroundColor: '#DDD',
+    height: 240,
+    width: 240,
+    borderColor: '#27408B',
+    borderRadius: 14,
+    borderWidth: 3,
+    backgroundColor: '#fffafa',
   },
   viewTextInformacoesPessoais: {
     flex: 1,

@@ -1,5 +1,4 @@
 const initialState = {
-  erroGeral: null,
   status: 0,
   avatar: null,
   nome: '',
@@ -9,6 +8,7 @@ const initialState = {
   erroSenha: null,
   confirmarSenha: '',
   uid: '',
+  erroGeral: null,
 };
 
 const AuthReducer = (state = initialState, action) => {
@@ -40,15 +40,15 @@ const AuthReducer = (state = initialState, action) => {
     return {...state, status: 1, uid: action.payload.uid};
   }
 
-  if (action.type == 'setErroEmail') {
+  if (action.type === 'setErroEmail') {
     return {...state, erroEmail: action.payload.erroEmail};
   }
 
-  if (action.type == 'setErroSenha') {
+  if (action.type === 'setErroSenha') {
     return {...state, erroSenha: action.payload.erroSenha};
   }
 
-  if (action.type == 'setErroGeral') {
+  if (action.type === 'setErroGeral') {
     return {...state, erroGeral: action.payload.erroGeral};
   }
 

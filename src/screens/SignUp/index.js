@@ -6,7 +6,7 @@ import {
   Text,
   StyleSheet,
   TextInput,
-  TouchableHighlight,
+  TouchableOpacity,
 } from 'react-native';
 
 import ImagePicker from 'react-native-image-picker';
@@ -80,12 +80,11 @@ export class SignUp extends Component {
           <View style={viewAvatar}>
             <Image style={avatar} source={this.props.avatar} />
             <View style={viewButtonAddFoto}>
-              <TouchableHighlight
-                underlayColor={'#fff'}
+              <TouchableOpacity
                 onPress={() => addImg(this)}
                 style={buttonAddFoto}>
                 <Text style={textAddFoto}>ADICIONAR OU ALTERAR FOTO</Text>
-              </TouchableHighlight>
+              </TouchableOpacity>
             </View>
           </View>
           <View style={viewCadastro}>
@@ -93,10 +92,16 @@ export class SignUp extends Component {
               placeholder="Digite seu nome"
               autoCapitalize={'none'}
               autoCorrect={false}
-              placeholderTextColor={'#1f33c9'}
+              placeholderTextColor={'#fff'}
               underlineColorAndroid="transparent"
               autoCompleteType={'name'}
-              style={input}
+              style={[
+                input,
+                {
+                  borderColor: '#27408B',
+                  borderWidth: 4,
+                },
+              ]}
               onChangeText={nome => this.props.editNome(nome)}
               value={this.props.nome}
             />
@@ -105,7 +110,7 @@ export class SignUp extends Component {
               autoCapitalize={'none'}
               autoCorrect={false}
               ref={x => (this.input = x)}
-              placeholderTextColor={'#1f33c9'}
+              placeholderTextColor={'#fff'}
               underlineColorAndroid="transparent"
               autoCompleteType={'email'}
               style={[
@@ -129,7 +134,7 @@ export class SignUp extends Component {
               placeholder="Digite uma senha"
               autoCapitalize={'none'}
               autoCorrect={false}
-              placeholderTextColor={'#1f33c9'}
+              placeholderTextColor={'#fff'}
               underlineColorAndroid="transparent"
               autoCompleteType={'password'}
               secureTextEntry={true}
@@ -156,7 +161,7 @@ export class SignUp extends Component {
             placeholder="Digite a mesma senha novamente"
             autoCapitalize={'none'}
             autoCorrect={false}
-            placeholderTextColor={'#1f33c9'}
+            placeholderTextColor={'#fff'}
             underlineColorAndroid="transparent"
             autoCompleteType={'password'}
             secureTextEntry={true}
@@ -180,9 +185,8 @@ export class SignUp extends Component {
         </View>
 
         <View style={viewBotaoCadastrar}>
-          <TouchableHighlight
+          <TouchableOpacity
             style={estiloBotaoCadastrar}
-            underlayColor={'#1f33c9'}
             onPress={() =>
               this.props.cadastrar(
                 this,
@@ -197,7 +201,7 @@ export class SignUp extends Component {
               )
             }>
             <Text style={txtBtnCadastrar}>Cadastrar</Text>
-          </TouchableHighlight>
+          </TouchableOpacity>
         </View>
         {this.props.erroGeral == null ? null : (
           <View style={viewErro}>
@@ -309,8 +313,8 @@ const styles = StyleSheet.create({
     //borderColor: '#8B6914',
     //borderWidth: 1,
     fontSize: 20,
-    color: '#1f33c9',
-    backgroundColor: '#ff9e29',
+    color: '#fff',
+    backgroundColor: '#00BFFF',
     borderRadius: 20,
   },
   viewBotaoCadastrar: {
@@ -318,16 +322,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   estiloBotaoCadastrar: {
-    borderColor: '#8B6914',
+    borderColor: '#27408B',
     borderWidth: 2,
     borderRadius: 20,
     margin: 10,
     padding: 10,
-    backgroundColor: '#ff9e29',
+    backgroundColor: '#00BFFF',
   },
   txtBtnCadastrar: {
-    fontFamily: 'FiraCode-Bold',
-    color: '#1f33c9',
+    fontWeight: 'bold',
+    color: '#fff',
     textAlign: 'center',
     fontSize: 20,
   },
@@ -341,16 +345,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonAddFoto: {
-    backgroundColor: '#1f33c9',
+    backgroundColor: '#00BFFF',
     borderRadius: 20,
-    borderColor: '#ff9e29',
-    borderWidth: 2,
-    padding: 5,
+    borderColor: '#27408B',
+    borderWidth: 4,
+    padding: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
   textAddFoto: {
-    color: '#ff9e29',
+    color: '#fff',
     fontWeight: 'bold',
     textAlign: 'center',
   },

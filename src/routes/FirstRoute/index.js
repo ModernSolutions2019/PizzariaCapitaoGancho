@@ -33,8 +33,9 @@ export const FirstRoute = createAppContainer(
           height: 65,
         },
         headerTitleStyle: {
-          color: '#ff9e29',
+          color: '#FF4500',
           fontSize: 20,
+          fontWeight: 'bold',
         },
       },
     },

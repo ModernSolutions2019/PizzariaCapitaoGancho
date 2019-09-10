@@ -38,6 +38,30 @@ export const editPizzas = pizzas => {
   };
 };
 
+export const removerPizza = (uid, pizzas) => {
+  return dispatch => {
+    firebase
+      .database()
+      .ref('Clientes')
+      .child(uid)
+      .child('pizzas')
+      .once('value', snapshot => {
+        let pizzas = snapshot.val() - 1;
+        firebase
+          .database()
+          .ref('Clientes')
+          .child(uid)
+          .update({pizzas});
+        dispatch({
+          type: 'editPizzas',
+          payload: {
+            pizzas,
+          },
+        });
+      });
+  };
+};
+
 export const adicionarPizza = (uid, pizzas) => {
   return dispatch => {
     firebase

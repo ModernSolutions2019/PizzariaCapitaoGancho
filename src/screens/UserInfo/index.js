@@ -1,15 +1,23 @@
 import React, {Component} from 'react';
 import {
-  ScrollView,
   View,
-  Image,
+  StatusBar,
   Text,
   StyleSheet,
-  TextInput,
   TouchableHighlight,
+  ScrollView,
+  Image,
+  TextInput,
 } from 'react-native';
 
-import {getNome, editPizzas, adicionarPizza} from '../../actions/UserActions';
+import {Icon} from 'react-native-elements';
+
+import {
+  getNome,
+  editPizzas,
+  adicionarPizza,
+  removerPizza,
+} from '../../actions/UserActions';
 
 import {editUid} from '../../actions/AuthActions';
 
@@ -17,9 +25,6 @@ import {connect} from 'react-redux';
 import ModalAddPizzas from '../../Components/ModalAddPizzas/ModalAddPizzas';
 
 export class UserInfo extends Component {
-  static navigationOptions = {
-    title: 'Informações pessoais',
-  };
   constructor(props) {
     super(props);
     this.props.editPizzas(this.props.pizzas);
@@ -42,11 +47,12 @@ export class UserInfo extends Component {
       viewTextRanking,
       viewTextPizzas,
       viewAdicionarPizza,
-      toAdicionarPizza,
-      textAdicionarPizza,
+      viewRemoverPizza,
+      viewBotoesPizza,
     } = styles;
     return (
       <View style={view}>
+        <StatusBar backgroundColor="#FF4500" barStyle="light-content" />
         <View style={viewCabecalho}>
           <View style={viewTextNome}>
             <Text style={textNome}>Nome:</Text>
@@ -64,19 +70,39 @@ export class UserInfo extends Component {
           </View>
           <View style={viewTextRanking}>
             <Text style={textConsumo}>Posição</Text>
-            <Text style={textPosicao}>1º Lugar</Text>
+            <Text style={textPosicao}>{this.props.posicaoRanking}</Text>
           </View>
         </View>
+        <View style={viewBotoesPizza}>
+          <View style={viewAdicionarPizza}>
+            <Icon
+              name="add-circle-outline"
+              size={45}
+              raised={true}
+              iconStyle={{alignItems: 'center'}}
+              color={'#27408B'}
+              underlayColor={'#FF4500'}
+              onPress={() =>
+                this.props.adicionarPizza(this.props.uid, this.props.pizzas)
+              }
+            />
+          </View>
 
-        <View style={viewAdicionarPizza}>
-          <TouchableHighlight
-            underlayColor={'#FF4500'}
-            style={toAdicionarPizza}
-            onPress={() => {
-              this.props.adicionarPizza(this.props.uid, this.props.pizzas);
-            }}>
-            <Text style={textAdicionarPizza}>+</Text>
-          </TouchableHighlight>
+          <View style={viewRemoverPizza}>
+            <Icon
+              name="minus"
+              type="material-community"
+              size={45}
+              raised={true}
+              iconStyle={{
+                color: '#27408B',
+              }}
+              underlayColor={'#FF4500'}
+              onPress={() =>
+                this.props.removerPizza(this.props.uid, this.props.pizzas)
+              }
+            />
+          </View>
         </View>
       </View>
     );
@@ -93,7 +119,7 @@ const mapStateToProps = state => {
 
 const UserInfoConnection = connect(
   mapStateToProps,
-  {getNome, editPizzas, editUid, adicionarPizza},
+  {getNome, editPizzas, editUid, adicionarPizza, removerPizza},
 )(UserInfo);
 
 export default UserInfoConnection;
@@ -101,6 +127,7 @@ export default UserInfoConnection;
 const styles = StyleSheet.create({
   view: {
     flex: 1,
+    backgroundColor: '#fffafa',
   },
   viewCabecalho: {
     flex: 1,
@@ -174,18 +201,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  toAdicionarPizza: {
-    borderColor: '#27408B',
-    borderWidth: 2,
-    borderRadius: 20,
-    backgroundColor: '#fafafa',
+  viewBotoesPizza: {
+    flex: 1,
+    flexDirection: 'row',
   },
-  textAdicionarPizza: {
-    marginHorizontal: 12,
-    marginVertical: 0,
-    color: '#27408B',
-    fontWeight: 'bold',
-    textAlign: 'center',
-    fontSize: 30,
+  viewRemoverPizza: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

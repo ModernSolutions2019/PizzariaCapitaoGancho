@@ -73,6 +73,7 @@ export const cadastrar = (
   email,
   senha,
   confirmarSenha,
+  urlAvatar,
 ) => {
   return dispatch => {
     firebase
@@ -281,5 +282,18 @@ export const editConfirmarSenha = confirmarSenha => {
     payload: {
       confirmarSenha,
     },
+  };
+};
+
+export const Sair = () => {
+  return dispatch => {
+    firebase.auth().signOut();
+
+    dispatch({
+      type: 'mudouStatus',
+      payload: {
+        status: 2,
+      },
+    });
   };
 };

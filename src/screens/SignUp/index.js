@@ -26,6 +26,7 @@ import {
   editConfirmarSenha,
   cadastrar,
   setErroGeral,
+  urlAvatar,
 } from '../../actions/AuthActions';
 
 import {connect} from 'react-redux';

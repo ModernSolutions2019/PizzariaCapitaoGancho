@@ -1,18 +1,46 @@
 import React, {Component} from 'react';
 import {
-  ScrollView,
   View,
-  Image,
-  Text,
+  StatusBar,
   FlatList,
   StyleSheet,
+  Text,
+  ScrollView,
+  Image,
   TextInput,
   TouchableHighlight,
 } from 'react-native';
 
-import {getNome} from '../../actions/UserActions';
+import {getRankingList} from '../../actions/RankingActions';
 
 import {connect} from 'react-redux';
+
+import TouchableScale from 'react-native-touchable-scale';
+
+import LinearGradient from 'react-native-linear-gradient';
+
+import {ListItem} from 'react-native-elements';
+
+renderItem = ({item}) => (
+  <ListItem
+    Component={TouchableScale}
+    friction={90}
+    tension={100}
+    activeScale={0.95}
+    linearGradientProps={{
+      colors: ['#27408B', '#FF4500'],
+    }}
+    ViewComponent={LinearGradient}
+    style={{margin: 5}}
+    ///leftAvatar={{rounded: true, source: {uri: `${objeto.state.foto.uri}`}}}
+    title={item.nome}
+    titleStyle={{color: 'white', fontWeight: 'bold'}}
+    subtitleStyle={{color: 'white'}}
+    rightTitle={`${item.pizzas} pizzas`}
+    rightTitleStyle={{color: 'white', fontWeight: 'bold'}}
+    //chevron={{color: 'white'}}
+  />
+);
 
 export class UserInfo extends Component {
   static navigationOptions = {
@@ -20,115 +48,89 @@ export class UserInfo extends Component {
   };
   constructor(props) {
     super(props);
-    this.state = {};
+
+    this.props.getRankingList();
   }
 
   render() {
-    const {
-      view,
-      viewTextNome,
-      textNome,
-      viewConteudo,
-      valorNome,
-      viewCabecalho,
-      viewTextConsumo,
-      textConsumo,
-      textQntPizzas,
-      textPizzas,
-      textPosicao,
-      viewTextRanking,
-      viewTextPizzas,
-    } = styles;
+    const {textRanking, viewTextRanking, view} = styles;
     return (
       <View style={view}>
-        <FlatList />
+        <View style={viewTextRanking}>
+          <Text style={textRanking}>Ranking</Text>
+        </View>
+        <FlatList
+          data={this.props.clientes}
+          renderItem={item => renderItem(item, this)}
+        />
       </View>
     );
   }
 }
 
+styles = StyleSheet.create({
+  view: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  viewTextRanking: {
+    margin: 10,
+    alignItems: 'center',
+  },
+  subtitleView: {
+    flexDirection: 'row',
+    paddingLeft: 10,
+    paddingTop: 5,
+  },
+  ratingImage: {
+    height: 19.21,
+    width: 100,
+  },
+  ratingText: {
+    paddingLeft: 10,
+    color: 'grey',
+  },
+  textRanking: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FF4500',
+  },
+});
+
 const mapStateToProps = state => {
   return {
-    nome: state.user.nome,
+    uid: state.auth.uid,
+    clientes: state.rank.clientes,
   };
 };
 
 const UserInfoConnection = connect(
   mapStateToProps,
-  {getNome},
+  {getRankingList},
 )(UserInfo);
 
 export default UserInfoConnection;
-
+/*
 const styles = StyleSheet.create({
   view: {
     flex: 1,
-  },
-  viewCabecalho: {
-    flex: 1,
-    borderBottomWidth: 2,
-    borderBottomColor: '#FF4500',
-  },
-  viewTextNome: {
-    flex: 1,
-    flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center',
   },
-  textNome: {
-    marginRight: 10,
-    color: '#27408B',
+  viewListaRanking: {
+    flex: 7,
+  },
+  textRanking: {
     fontSize: 20,
     fontWeight: 'bold',
-  },
-  valorNome: {
-    color: '#FF4500',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  viewConteudo: {
-    flex: 10,
-    flexDirection: 'row',
-  },
-  viewTextConsumo: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  viewTextRanking: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  textConsumo: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
     color: '#FF4500',
   },
-  viewTextPizzas: {
-    flexDirection: 'row',
+  flat: {
+    flex: 1,
+  },
+  viewTitulo: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  textQntPizzas: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#27408B',
-    marginRight: 5,
-  },
-  textPizzas: {
-    fontSize: 17,
-    fontWeight: '700',
-    textAlign: 'center',
-    color: '#27408B',
-  },
-  textPosicao: {
-    fontSize: 17,
-    fontWeight: '700',
-    textAlign: 'center',
-    color: '#27408B',
   },
 });
+*/

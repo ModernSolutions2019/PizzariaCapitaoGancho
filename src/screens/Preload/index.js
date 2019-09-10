@@ -24,6 +24,7 @@ class Preload extends Component {
   componentDidMount() {
     trocarTela(this, 2, 'Home');
     if (this.props.uid != '') {
+      this.props.getNome();
       trocarTela(this, 1, 'SecondRoute');
     }
   }

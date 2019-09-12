@@ -37,7 +37,11 @@ const AuthReducer = (state = initialState, action) => {
   }
 
   if (action.type === 'editUid') {
-    return {...state, status: 1, uid: action.payload.uid};
+    return {
+      ...state,
+      status: 1,
+      uid: action.payload.uid,
+    };
   }
 
   if (action.type === 'setErroEmail') {

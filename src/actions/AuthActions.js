@@ -87,7 +87,7 @@ export const cadastrar = (
         let avatar = firebase
           .storage()
           .ref()
-          .child('Clientes')
+          .child('clientes')
           .child(`${uid}.jpg`);
 
         let mime = 'image/jpeg';
@@ -105,20 +105,12 @@ export const cadastrar = (
               snapshot => {
                 firebase
                   .database()
-                  .ref('Clientes')
+                  .ref('clientes')
                   .child(uid)
                   .set({
                     key: uid,
                     nome,
                     pizzas: 0,
-                  });
-
-                firebase
-                  .database()
-                  .ref('Ranking')
-                  .update({
-                    nome,
-                    pizzas,
                   });
 
                 dispatch({

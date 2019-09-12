@@ -5,7 +5,7 @@ export const getNome = () => {
     let uid = firebase.auth().currentUser.uid;
     firebase
       .database()
-      .ref('Clientes')
+      .ref('clientes')
       .child(uid)
       .once('value', snapshot => {
         let nome = snapshot.val().nome;
@@ -23,7 +23,7 @@ export const editPizzas = pizzas => {
   return dispatch => {
     firebase
       .database()
-      .ref('Clientes')
+      .ref('clientes')
       .child(firebase.auth().currentUser.uid)
       .child('pizzas')
       .on('value', snapshot => {
@@ -42,14 +42,14 @@ export const removerPizza = (uid, pizzas) => {
   return dispatch => {
     firebase
       .database()
-      .ref('Clientes')
+      .ref('clientes')
       .child(uid)
       .child('pizzas')
       .once('value', snapshot => {
         let pizzas = snapshot.val() - 1;
         firebase
           .database()
-          .ref('Clientes')
+          .ref('clientes')
           .child(uid)
           .update({pizzas});
         dispatch({
@@ -66,14 +66,14 @@ export const adicionarPizza = (uid, pizzas) => {
   return dispatch => {
     firebase
       .database()
-      .ref('Clientes')
+      .ref('clientes')
       .child(uid)
       .child('pizzas')
       .once('value', snapshot => {
         let pizzas = snapshot.val() + 1;
         firebase
           .database()
-          .ref('Clientes')
+          .ref('clientes')
           .child(uid)
           .update({pizzas});
         dispatch({

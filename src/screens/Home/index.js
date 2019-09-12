@@ -21,6 +21,7 @@ import {
   setErroGeral,
   setErroEmail,
   setErroSenha,
+  verificarLogin,
 } from '../../actions/AuthActions';
 
 class Home extends Component {
@@ -221,7 +222,15 @@ const mapStateToProps = state => {
 
 const HomeConnection = connect(
   mapStateToProps,
-  {editEmail, editSenha, setErroGeral, logar, setErroEmail, setErroSenha},
+  {
+    editEmail,
+    editSenha,
+    setErroGeral,
+    logar,
+    setErroEmail,
+    verificarLogin,
+    setErroSenha,
+  },
 )(Home);
 
 export default HomeConnection;

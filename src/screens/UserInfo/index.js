@@ -22,12 +22,19 @@ import {
 import {editUid} from '../../actions/AuthActions';
 
 import {connect} from 'react-redux';
-import ModalAddPizzas from '../../Components/ModalAddPizzas/ModalAddPizzas';
+
+import {getPosition, getRankingList} from '../../actions/RankingActions';
+
+//import ModalAddPizzas from '../../Components/ModalAddPizzas/ModalAddPizzas';
 
 export class UserInfo extends Component {
   constructor(props) {
     super(props);
     this.props.editPizzas(this.props.pizzas);
+
+    this.props.getRankingList();
+
+    this.props.getPosition(this.props.uid);
   }
 
   render() {
@@ -65,12 +72,12 @@ export class UserInfo extends Component {
             <Text style={textConsumo}>Consumo</Text>
             <View style={viewTextPizzas}>
               <Text style={textQntPizzas}>{this.props.pizzas}</Text>
-              <Text style={textPizzas}>Pizzas</Text>
+              <Text style={textPizzas}>pedaços</Text>
             </View>
           </View>
           <View style={viewTextRanking}>
             <Text style={textConsumo}>Posição</Text>
-            <Text style={textPosicao}>{this.props.posicaoRanking}</Text>
+            {posi(textPosicao, this)}
           </View>
         </View>
         <View style={viewBotoesPizza}>
@@ -109,17 +116,31 @@ export class UserInfo extends Component {
   }
 }
 
+const posi = (textPosicao, objeto) => {
+  return <Text style={textPosicao}>{objeto.props.position}</Text>;
+};
+
 const mapStateToProps = state => {
   return {
     uid: state.auth.uid,
     pizzas: state.user.pizzas,
+    clientes: state.rank.clientes,
+    position: state.rank.position,
     nome: state.user.nome,
   };
 };
 
 const UserInfoConnection = connect(
   mapStateToProps,
-  {getNome, editPizzas, editUid, adicionarPizza, removerPizza},
+  {
+    getNome,
+    editPizzas,
+    getPosition,
+    getRankingList,
+    editUid,
+    adicionarPizza,
+    removerPizza,
+  },
 )(UserInfo);
 
 export default UserInfoConnection;

@@ -44,14 +44,13 @@ export const logar = (email, senha, setErroGeral) => {
             snapshot.forEach(childItem => {
               nome = childItem.val().nome;
             });
+            dispatch({
+              type: 'getNome',
+              payload: {
+                nome,
+              },
+            });
           });
-
-        dispatch({
-          type: 'getNome',
-          payload: {
-            nome,
-          },
-        });
 
         dispatch({
           type: 'editUid',
@@ -90,8 +89,6 @@ export const cadastrar = (
   nome,
   email,
   senha,
-  confirmarSenha,
-  urlAvatar,
 ) => {
   return dispatch => {
     firebase
@@ -130,6 +127,13 @@ export const cadastrar = (
                     nome,
                     pizzas: 0,
                   });
+
+                dispatch({
+                  type: 'getNome',
+                  payload: {
+                    nome,
+                  },
+                });
 
                 dispatch({
                   type: 'editUid',

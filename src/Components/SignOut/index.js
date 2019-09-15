@@ -29,12 +29,15 @@ const SignOutConnection = connect(
 
 const logout = objeto => {
   objeto.props.Sair();
+
   objeto.props.navigation.dispatch(
     StackActions.reset({
       index: 0,
       actions: [NavigationActions.navigate({routeName: 'Home'})],
     }),
   );
+
+  window.globalNavigator.navigate('Home');
 };
 
 export default SignOutConnection;

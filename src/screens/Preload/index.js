@@ -19,6 +19,8 @@ class Preload extends Component {
   constructor(props) {
     super(props);
     this.props.verificarLogin();
+
+    window.globalNavigator = this.props.navigation;
   }
 
   componentDidMount() {

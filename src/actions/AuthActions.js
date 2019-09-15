@@ -35,6 +35,24 @@ export const logar = (email, senha, setErroGeral) => {
       .then(() => {
         let uid = firebase.auth().currentUser.uid;
 
+        let nome;
+
+        firebase
+          .database()
+          .ref('clientes')
+          .on('value', snapshot => {
+            snapshot.forEach(childItem => {
+              nome = childItem.val().nome;
+            });
+          });
+
+        dispatch({
+          type: 'getNome',
+          payload: {
+            nome,
+          },
+        });
+
         dispatch({
           type: 'editUid',
           payload: {

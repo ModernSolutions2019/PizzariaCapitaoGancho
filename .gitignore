@@ -40,6 +40,8 @@ buck-out/
 \.buckd/
 *.keystore
 
+EstruturaBancoPizzaria.txt
+
 node_modules/
 
 # fastlane

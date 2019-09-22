@@ -18,6 +18,9 @@ export const FirstRoute = createAppContainer(
       },
       SignUp: {
         screen: SignUp,
+        navigationOptions: {
+          title: 'Cadastro',
+        },
       },
       SecondRoute: {
         screen: SecondRoute,

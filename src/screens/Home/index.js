@@ -14,6 +14,8 @@ import {connect} from 'react-redux';
 
 import Logo from '../../Components/Logo/index';
 
+import LoadingItem from '../../Components/LoadingItem/index';
+
 import {
   editEmail,
   editSenha,
@@ -39,6 +41,7 @@ class Home extends Component {
       bordaEmail: 4,
       bordaSenha: 4,
       corTextoInput: '#fff',
+      loading: false,
     };
   }
 
@@ -131,16 +134,19 @@ class Home extends Component {
           <View style={viewLoginButton}>
             <TouchableOpacity
               style={loginButtonStyle}
-              onPress={() =>
+              onPress={() => {
+                this.setState({loading: true});
                 this.props.logar(
                   this.props.email,
                   this.props.senha,
                   this.props.setErroGeral,
-                )
-              }>
+                  () => this.setState({loading: false}),
+                );
+              }}>
               <Text style={textLoginButtonStyle}>Entrar</Text>
               {/*SIGN IN*/}
             </TouchableOpacity>
+            <LoadingItem visible={this.state.loading} />
           </View>
         </View>
         {/*
@@ -175,6 +181,7 @@ const validate = (text, type, objeto) => {
   }
 
   if (type == 'email') {
+    text = text.trim();
     if (email.test(text) || emailBR.test(text)) {
       objeto.setState({bordaEmail: 4, erroEmail: '#27408B'});
       objeto.props.setErroEmail(null);

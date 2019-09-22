@@ -2,16 +2,19 @@ import React, {Component} from 'react';
 import {
   ScrollView,
   View,
-  Image,
   Text,
   StyleSheet,
   TextInput,
-  TouchableOpacity,
-  Keyboard,
+  TouchableHighlight,
+  Picker,
 } from 'react-native';
 
+import {Avatar} from 'react-native-elements';
+
 import ImagePicker from 'react-native-image-picker';
-import RNFetchBlob from 'react-native-fetch-blob';
+import RNFetchBlob from 'rn-fetch-blob';
+
+import LoadingItem from '../../Components/LoadingItem/index';
 
 window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest;
 window.Blob = RNFetchBlob.polyfill.Blob;
@@ -19,53 +22,41 @@ window.Blob = RNFetchBlob.polyfill.Blob;
 import {
   editAvatar,
   editNome,
+  setErroNome,
   editEmail,
+  setCorErroEmail,
   setErroEmail,
   editSenha,
   setErroSenha,
   editConfirmarSenha,
+  setErroConfirmarSenha,
   cadastrar,
-  setErroGeral,
-  urlAvatar,
+  setErroAvatar,
+  setCorErroAvatar,
+  setCorErroNome,
+  setCorErroSenha,
+  setCorErroConfirmarSenha,
 } from '../../actions/AuthActions';
 
 import {connect} from 'react-redux';
 
 export class SignUp extends Component {
-  static navigationOptions = {
-    title: 'Cadastro',
-  };
   constructor(props) {
     super(props);
     this.state = {
-      erroEmail: '#27408B',
-      erroSenha: '#27408B',
-      erroConfirmarSenha: '#27408B',
-      bordaConfirmarSenha: 4,
-      bordaEmail: 4,
-      bordaSenha: 4,
+      textoSeguro: true,
+      loading: false,
     };
-  }
-
-  componentDidUpdate() {
-    if (this.props.status == 1) {
-      Keyboard.dismiss();
-      this.props.navigation.navigate('SecondRoute');
-    }
   }
 
   render() {
     const {
       view,
-      viewTextInformacoesPessoais,
-      textInformacoesPessoais,
+
       input,
       viewBotaoCadastrar,
       estiloBotaoCadastrar,
       txtBtnCadastrar,
-      viewButtonAddFoto,
-      buttonAddFoto,
-      textAddFoto,
       viewAvatar,
       viewPrimeiraFaseCadastro,
       viewSegundaFaseCadastro,
@@ -73,22 +64,49 @@ export class SignUp extends Component {
       viewCadastro,
       erro,
       viewErro,
+      viewErroAvatar,
+      erroAvatar,
     } = styles;
     return (
       <ScrollView style={view}>
-        {/*<View style={viewTextInformacoesPessoais}>
-          <Text style={textInformacoesPessoais}>Informações Pessoais</Text>
-    </View>*/}
         <View style={viewPrimeiraFaseCadastro}>
           <View style={viewAvatar}>
-            <Image style={avatar} source={this.props.avatar} />
-            <View style={viewButtonAddFoto}>
-              <TouchableOpacity
-                onPress={() => addImg(this)}
-                style={buttonAddFoto}>
-                <Text style={textAddFoto}>ADICIONAR OU ALTERAR FOTO</Text>
-              </TouchableOpacity>
-            </View>
+            <Avatar
+              rounded
+              size="xlarge"
+              icon={{name: 'user', type: 'font-awesome', color: '#fff'}}
+              source={this.props.avatar}
+              activeOpacity={0.7}
+              containerStyle={[
+                avatar,
+                {
+                  borderWidth: this.props.tamanhoBordaAvatar,
+                  borderColor: this.props.corErroAvatar,
+                },
+              ]}
+              showEditButton
+              editButton={{
+                name: 'mode-edit',
+                type: 'material',
+                color: '#fff',
+                style: {
+                  borderRadius: 40,
+                  borderWidth: this.props.tamanhoBordaAvatar,
+                  borderColor: this.props.corErroAvatar,
+                },
+                containerStyle: {
+                  flex: 1,
+                  borderRadius: 40,
+                },
+                underlayColor: '#fff',
+              }}
+              onEditPress={() => addImg(this)}
+            />
+            {this.props.erroAvatar == null ? null : (
+              <View style={viewErroAvatar}>
+                <Text style={erroAvatar}>{this.props.erroAvatar}</Text>
+              </View>
+            )}
           </View>
           <View style={viewCadastro}>
             <TextInput
@@ -101,13 +119,19 @@ export class SignUp extends Component {
               style={[
                 input,
                 {
-                  borderColor: '#27408B',
-                  borderWidth: 4,
+                  borderColor: this.props.corErroNome,
+                  borderWidth: this.props.tamanhoBordaNome,
                 },
               ]}
-              onChangeText={nome => this.props.editNome(nome)}
               value={this.props.nome}
+              onBlur={e => validate(this.props.nome, 'nome', this)}
+              onChangeText={nome => validateOnChange(nome, 'nome', this)}
             />
+            {this.props.erroNome == null ? null : (
+              <View style={viewErro}>
+                <Text style={erro}>{this.props.erroNome}</Text>
+              </View>
+            )}
             <TextInput
               placeholder="Digite seu e-mail"
               autoCapitalize={'none'}
@@ -119,8 +143,8 @@ export class SignUp extends Component {
               style={[
                 input,
                 {
-                  borderColor: this.state.erroEmail,
-                  borderWidth: this.state.bordaEmail,
+                  borderColor: this.props.corErroEmail,
+                  borderWidth: this.props.tamanhoBordaEmail,
                 },
               ]}
               value={this.props.email}
@@ -132,7 +156,6 @@ export class SignUp extends Component {
                 <Text style={erro}>{this.props.erroEmail}</Text>
               </View>
             )}
-
             <TextInput
               placeholder="Digite uma senha"
               autoCapitalize={'none'}
@@ -144,8 +167,8 @@ export class SignUp extends Component {
               style={[
                 input,
                 {
-                  borderColor: this.state.erroSenha,
-                  borderWidth: this.state.bordaSenha,
+                  borderColor: this.props.corErroSenha,
+                  borderWidth: this.props.tamanhoBordaSenha,
                 },
               ]}
               value={this.props.senha}
@@ -167,79 +190,116 @@ export class SignUp extends Component {
             placeholderTextColor={'#fff'}
             underlineColorAndroid="transparent"
             autoCompleteType={'password'}
-            secureTextEntry={true}
+            secureTextEntry={this.state.textoSeguro}
             style={[
               input,
               {
-                borderColor: this.state.erroConfirmarSenha,
-                borderWidth: this.state.bordaConfirmarSenha,
+                borderColor: this.props.corErroConfirmarSenha,
+                borderWidth: this.props.tamanhoBordaConfirmarSenha,
               },
             ]}
             value={this.props.confirmarSenha}
+            onBlur={e =>
+              validate(this.props.confirmarSenha, 'confirmarSenha', this)
+            }
             onChangeText={confirmarSenha =>
-              this.props.editConfirmarSenha(confirmarSenha)
+              validateOnChange(confirmarSenha, 'confirmarSenha', this)
             }
           />
-          {this.props.erroSenha == null ? null : (
+          {this.props.erroConfirmarSenha == null ? null : (
             <View style={viewErro}>
-              <Text style={erro}>{this.props.erroSenha}</Text>
+              <Text style={erro}>{this.props.erroConfirmarSenha}</Text>
             </View>
           )}
         </View>
-
         <View style={viewBotaoCadastrar}>
-          <TouchableOpacity
+          <TouchableHighlight
             style={estiloBotaoCadastrar}
-            onPress={() =>
-              this.props.cadastrar(
-                this,
-                this.props.setErroEmail,
-                this.props.setErroSenha,
-                this.props.avatar,
-                this.props.nome,
-                this.props.email,
-                this.props.senha,
-                this.props.confirmarSenha,
-                this.props.uid,
-              )
-            }>
+            underlayColor={'#1f33c9'}
+            onPress={() => {
+              this.setState({loading: true});
+              this.props.cadastrar(this, () => this.setState({loading: false}));
+            }}>
             <Text style={txtBtnCadastrar}>Cadastrar</Text>
-          </TouchableOpacity>
+          </TouchableHighlight>
         </View>
         {this.props.erroGeral == null ? null : (
           <View style={viewErro}>
             <Text style={erro}>{this.props.erroGeral}</Text>
           </View>
         )}
+        <LoadingItem visible={this.state.loading} />
       </ScrollView>
     );
   }
 }
 
 const validate = (text, type, objeto) => {
-  email = /^[a-zA-Z.]+@+[a-zA-Z]+.com+$/;
-  emailBR = /^[a-zA-Z.]+@+[a-zA-Z]+.com.br+$/;
+  email = /^[a-z1-9A-Z.]+@+[a-zA-Z]+.com+$/;
+  emailBR = /^[a-z1-9A-Z.]+@+[a-zA-Z]+.com.br+$/;
+
+  nomeCompleto = /^[a-zA-ZÁáÉéÍíÓóÚúÂâÊêÎîÔôÛûÃãÕõ]+ +[a-zA-ZÁáÉéÍíÓóÚúÂâÊêÎîÔôÛûÃãÕõ]+$/;
+  nomeCompleto2 = /^[a-zA-ZÁáÉéÍíÓóÚúÂâÊêÎîÔôÛûÃãÕõ]+ +[a-zA-ZÁáÉéÍíÓóÚúÂâÊêÎîÔôÛûÃãÕõ]+ +[a-zA-ZÁáÉéÍíÓóÚúÂâÊêÎîÔôÛûÃãÕõ]+$/;
+  nomeCompleto3 = /^[a-zA-ZÁáÉéÍíÓóÚúÂâÊêÎîÔôÛûÃãÕõ]+ +[a-zA-ZÁáÉéÍíÓóÚúÂâÊêÎîÔôÛûÃãÕõ]+ +[a-zA-ZÁáÉéÍíÓóÚúÂâÊêÎîÔôÛûÃãÕõ]+ +[a-zA-ZÁáÉéÍíÓóÚúÂâÊêÎîÔôÛûÃãÕõ]+$/;
+  nomeCompleto4 = /^[a-zA-ZÁáÉéÍíÓóÚúÂâÊêÎîÔôÛûÃãÕõ]+ +[a-zA-ZÁáÉéÍíÓóÚúÂâÊêÎîÔôÛûÃãÕõ]+ +[a-zA-ZÁáÉéÍíÓóÚúÂâÊêÎîÔôÛûÃãÕõ]+ +[a-zA-ZÁáÉéÍíÓóÚúÂâÊêÎîÔôÛûÃãÕõ]+ +[a-zA-ZÁáÉéÍíÓóÚúÂâÊêÎîÔôÛûÃãÕõ]+$/;
+  nomeCompleto5 = /^[a-zA-ZÁáÉéÍíÓóÚúÂâÊêÎîÔôÛûÃãÕõ]+ +[a-zA-ZÁáÉéÍíÓóÚúÂâÊêÎîÔôÛûÃãÕõ]+ +[a-zA-ZÁáÉéÍíÓóÚúÂâÊêÎîÔôÛûÃãÕõ]+ +[a-zA-ZÁáÉéÍíÓóÚúÂâÊêÎîÔôÛûÃãÕõ]+ +[a-zA-ZÁáÉéÍíÓóÚúÂâÊêÎîÔôÛûÃãÕõ]+ +[a-zA-ZÁáÉéÍíÓóÚúÂâÊêÎîÔôÛûÃãÕõ]+$/;
+  nomeCompleto6 = /^[a-zA-ZÁáÉéÍíÓóÚúÂâÊêÎîÔôÛûÃãÕõ]+ +[a-zA-ZÁáÉéÍíÓóÚúÂâÊêÎîÔôÛûÃãÕõ]+ +[a-zA-ZÁáÉéÍíÓóÚúÂâÊêÎîÔôÛûÃãÕõ]+ +[a-zA-ZÁáÉéÍíÓóÚúÂâÊêÎîÔôÛûÃãÕõ]+ +[a-zA-ZÁáÉéÍíÓóÚúÂâÊêÎîÔôÛûÃãÕõ]+ +[a-zA-ZÁáÉéÍíÓóÚúÂâÊêÎîÔôÛûÃãÕõ]+ +[a-zA-ZÁáÉéÍíÓóÚúÂâÊêÎîÔôÛûÃãÕõ]+$/;
+
+  if (type == 'nome') {
+    if (
+      nomeCompleto.test(text) ||
+      nomeCompleto2.test(text) ||
+      nomeCompleto3.test(text) ||
+      nomeCompleto4.test(text) ||
+      nomeCompleto5.test(text) ||
+      nomeCompleto6.test(text)
+    ) {
+      objeto.props.setCorErroNome('#27408B', 4);
+      objeto.props.setErroNome(null);
+    } else {
+      if (text == '') {
+        objeto.props.setCorErroNome('#27408B', 4);
+        objeto.props.setErroNome(null);
+      } else {
+        objeto.props.setCorErroNome('#f00', 4);
+        objeto.props.setErroNome('Digite seu nome completo');
+      }
+    }
+  }
 
   if (type == 'senha') {
     if (text == '' || text.length >= 6) {
-      objeto.setState({bordaSenha: 1, erroSenha: '#8B6914'});
+      objeto.props.setCorErroSenha('#27408B', 4);
       objeto.props.setErroSenha(null);
     } else {
-      objeto.setState({bordaSenha: 4, erroSenha: '#f00'});
+      objeto.props.setCorErroSenha('#f00', 4);
       objeto.props.setErroSenha('A senha deve ter mais que 6 digitos');
     }
   }
 
+  if (type == 'confirmarSenha') {
+    if (text == '' || text.length == objeto.props.senha.length) {
+      objeto.props.setCorErroConfirmarSenha('#27408B', 4);
+      objeto.props.setErroConfirmarSenha(null);
+    } else {
+      objeto.props.setCorErroSenha('#f00', 4);
+      objeto.props.setErroSenha('As senhas não batem');
+      objeto.props.setCorErroConfirmarSenha('#f00', 4);
+      objeto.props.setErroConfirmarSenha('As senhas não batem');
+    }
+  }
+
   if (type == 'email') {
+    text = text.trim();
     if (email.test(text) || emailBR.test(text)) {
-      objeto.setState({bordaEmail: 1, erroEmail: '#8B6914'});
+      objeto.props.setCorErroEmail('#27408B', 4);
       objeto.props.setErroEmail(null);
     } else {
       if (text == '') {
-        objeto.setState({bordaEmail: 1, erroEmail: '#8B6914'});
+        objeto.props.setCorErroEmail('#27408B', 4);
         objeto.props.setErroEmail(null);
       } else {
-        objeto.setState({bordaEmail: 4, erroEmail: '#f00'});
+        objeto.props.setCorErroEmail('#f00', 4);
         objeto.props.setErroEmail('Email inválido');
       }
     }
@@ -248,16 +308,43 @@ const validate = (text, type, objeto) => {
 
 const validateOnChange = (text, type, objeto) => {
   if (type == 'email') {
-    objeto.setState({borda: 1, erro: '#8B6914'});
+    objeto.props.setCorErroEmail('#27408B', 4);
     objeto.props.setErroEmail(null);
 
     objeto.props.editEmail(text);
   }
   if (type == 'senha') {
-    objeto.setState({bordaSenha: 1, erroSenha: '#8B6914'});
+    if (text.charAt(0) == ' ') {
+      text = text.trim();
+    }
+    objeto.props.setCorErroSenha('#27408B', 4);
     objeto.props.setErroSenha(null);
 
     objeto.props.editSenha(text);
+  }
+
+  if (type == 'confirmarSenha') {
+    if (text.charAt(0) == ' ') {
+      text = text.trim();
+    }
+    objeto.props.setCorErroSenha('#27408B', 4);
+    objeto.props.setErroSenha(null);
+
+    objeto.props.setCorErroConfirmarSenha('#27408B', 4);
+    objeto.props.setErroConfirmarSenha(null);
+
+    objeto.props.editConfirmarSenha(text);
+  }
+
+  if (type == 'nome') {
+    if (text.charAt(0) == ' ') {
+      text = text.trim();
+    }
+    objeto.props.setCorErroNome('#27408B', 4);
+
+    objeto.props.setErroNome(null);
+
+    objeto.props.editNome(text);
   }
 };
 
@@ -271,41 +358,61 @@ const addImg = objeto => {
   ImagePicker.showImagePicker(options, r => {
     if (r.uri) {
       objeto.props.editAvatar({uri: r.uri});
+      objeto.props.setCorErroAvatar('#27408B', 4);
+      objeto.props.setErroAvatar(null);
     }
   });
 };
 
 const mapStateToProps = state => {
   return {
-    status: state.auth.status,
+    uid: state.auth.uid,
     avatar: state.auth.avatar,
+    erroAvatar: state.auth.erroAvatar,
+    corErroAvatar: state.auth.corErroAvatar,
+    tamanhoBordaAvatar: state.auth.tamanhoBordaAvatar,
     nome: state.auth.nome,
+    erroNome: state.auth.erroNome,
+    corErroNome: state.auth.corErroNome,
+    tamanhoBordaNome: state.auth.tamanhoBordaNome,
     email: state.auth.email,
+    corErroEmail: state.auth.corErroEmail,
+    tamanhoBordaEmail: state.auth.tamanhoBordaEmail,
     erroEmail: state.auth.erroEmail,
     senha: state.auth.senha,
+    corErroSenha: state.auth.corErroSenha,
+    tamanhoBordaSenha: state.auth.tamanhoBordaSenha,
     erroSenha: state.auth.erroSenha,
     confirmarSenha: state.auth.confirmarSenha,
-    erroGeralCadastro: state.auth.erroGeralCadastro,
+    corErroConfirmarSenha: state.auth.corErroConfirmarSenha,
+    tamanhoBordaConfirmarSenha: state.auth.tamanhoBordaConfirmarSenha,
+    erroConfirmarSenha: state.auth.erroConfirmarSenha,
   };
 };
 
-const SignUpConnection = connect(
+const ConexaoSignUp = connect(
   mapStateToProps,
   {
-    editNome,
     editAvatar,
     editNome,
+    setErroNome,
     editEmail,
     setErroEmail,
     editSenha,
     setErroSenha,
     editConfirmarSenha,
+    setErroConfirmarSenha,
+    setErroAvatar,
     cadastrar,
-    setErroGeral,
+    setCorErroAvatar,
+    setCorErroEmail,
+    setCorErroNome,
+    setCorErroSenha,
+    setCorErroConfirmarSenha,
   },
 )(SignUp);
 
-export default SignUpConnection;
+export default ConexaoSignUp;
 
 const styles = StyleSheet.create({
   view: {
@@ -315,8 +422,6 @@ const styles = StyleSheet.create({
     margin: 10,
     marginBottom: 5,
     padding: 10,
-    //borderColor: '#8B6914',
-    //borderWidth: 1,
     fontSize: 20,
     color: '#fff',
     backgroundColor: '#00BFFF',
@@ -332,13 +437,13 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     margin: 10,
     padding: 10,
-    backgroundColor: '#fffafa',
+    backgroundColor: '#fafafa',
   },
   txtBtnCadastrar: {
-    fontWeight: 'bold',
     color: '#FF4500',
     textAlign: 'center',
     fontSize: 20,
+    fontWeight: 'bold',
   },
   textInformacoesPessoais: {
     color: '#1f33c9',
@@ -350,16 +455,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonAddFoto: {
-    backgroundColor: '#00BFFF',
+    backgroundColor: '#1f33c9',
     borderRadius: 20,
-    borderColor: '#27408B',
-    borderWidth: 4,
-    padding: 10,
+    borderColor: '#ff9e29',
+    borderWidth: 2,
+    padding: 5,
     alignItems: 'center',
     justifyContent: 'center',
   },
   textAddFoto: {
-    color: '#fff',
+    color: '#ff9e29',
     fontWeight: 'bold',
     textAlign: 'center',
   },
@@ -368,7 +473,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     margin: 10,
-
     flex: 3,
   },
   viewPrimeiraFaseCadastro: {
@@ -384,13 +488,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   avatar: {
-    marginBottom: 6,
-    height: 240,
-    width: 240,
-    borderColor: '#27408B',
-    borderRadius: 14,
-    borderWidth: 3,
-    backgroundColor: '#fffafa',
+    flex: 2,
   },
   viewTextInformacoesPessoais: {
     flex: 1,
@@ -405,5 +503,30 @@ const styles = StyleSheet.create({
   viewErro: {
     marginTop: 0,
     marginLeft: 30,
+  },
+  viewComponenteListaProfissoes: {
+    flex: 1,
+  },
+  viewPickerListaProfissoes: {
+    justifyContent: 'center',
+    margin: 10,
+    borderRadius: 20,
+    backgroundColor: '#ff9e29',
+  },
+  pickerListaProfissoes: {
+    color: '#1f33c9',
+  },
+  itemPickerListaProfissoes: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  viewErroAvatar: {marginTop: 0, marginLeft: 0},
+  erroAvatar: {
+    color: 'red',
+    fontWeight: 'bold',
+    fontSize: 17,
+  },
+  viewSenhaTextInput: {
+    flexDirection: 'row',
   },
 });

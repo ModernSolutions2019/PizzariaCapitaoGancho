@@ -32,15 +32,17 @@ export class UserInfo extends Component {
     super(props);
     this.props.editPizzas(this.props.pizzas);
 
-    this.props.getRankingList();
-
     this.props.getPosition(this.props.uid);
+  }
+
+  componentDidMount() {
+    this.props.getNome();
+    this.props.getRankingList();
   }
 
   render() {
     const {
       view,
-      viewModal,
       viewTextNome,
       textNome,
       viewConteudo,
@@ -124,7 +126,6 @@ const mapStateToProps = state => {
   return {
     uid: state.auth.uid,
     pizzas: state.user.pizzas,
-    clientes: state.rank.clientes,
     position: state.rank.position,
     nome: state.user.nome,
   };

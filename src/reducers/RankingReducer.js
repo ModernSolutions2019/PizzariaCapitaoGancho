@@ -14,6 +14,7 @@ const RankingReducer = (state = initialState, action) => {
   if (action.type === 'setPosition') {
     return {...state, position: action.payload.position};
   }
+
   return state;
 };
 

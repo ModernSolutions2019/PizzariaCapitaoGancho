@@ -1,15 +1,20 @@
-- Pizzas
---idPizza
----id: idPizza
----sabor: Pizza
---...
+-Conversas
+--IdConversa
+---Membros
+----idUser1
+----idProvider1
+---Mensagem
 
--Clientes
---idCliente
----id: idCliente
----nome: nomeCliente
----pizzasConsumidas: [ {idPizza, sabor} ... ];
+-Usuarios
+--idUsuario
+---id: idUsuario
+---nome: nomeUsuario
+---typeUsuario: User ou User/Provider
+----Membros
+-----idUser
+-----idProvider
 ...
 
--Ranking (orderByChild('pizzasConsumidas))
---[idClientes child(nome)]
+-Profissoes
+--idProfissoes
+---nomeProfissao

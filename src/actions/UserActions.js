@@ -3,17 +3,20 @@ import firebase from '../FirebaseConnection';
 export const getNome = () => {
   return dispatch => {
     let uid = firebase.auth().currentUser.uid;
+
     firebase
       .database()
       .ref('clientes')
-      .child(uid)
-      .once('value', snapshot => {
-        let nome = snapshot.val().nome;
-        dispatch({
-          type: 'getNome',
-          payload: {
-            nome,
-          },
+      .orderByChild('key')
+      .equalTo(uid)
+      .on('value', snapshot => {
+        snapshot.forEach(childItem => {
+          dispatch({
+            type: 'getNome',
+            payload: {
+              nome: childItem.val().nome,
+            },
+          });
         });
       });
   };

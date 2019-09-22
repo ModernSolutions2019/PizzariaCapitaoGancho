@@ -32,7 +32,7 @@ renderItem = ({item}) => (
     }}
     ViewComponent={LinearGradient}
     style={{margin: 5}}
-    ///leftAvatar={{rounded: true, source: {uri: `${objeto.state.foto.uri}`}}}
+    leftAvatar={{rounded: true, source: {uri: `${item.url}`}}}
     title={item.nome}
     titleStyle={{color: 'white', fontWeight: 'bold'}}
     subtitleStyle={{color: 'white'}}

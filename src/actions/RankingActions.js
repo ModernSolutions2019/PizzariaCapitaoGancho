@@ -13,6 +13,7 @@ export const getRankingList = () => {
           clientes.push({
             key: childItem.key,
             nome: childItem.val().nome,
+            url: childItem.val().url,
             pizzas: childItem.val().pizzas,
           });
 
@@ -22,14 +23,15 @@ export const getRankingList = () => {
         firebase
           .database()
           .ref('ranking')
-          .set(clientes);
-
-        dispatch({
-          type: 'setRankingList',
-          payload: {
-            clientes,
-          },
-        });
+          .set(clientes)
+          .then(() => {
+            dispatch({
+              type: 'setRankingList',
+              payload: {
+                clientes,
+              },
+            });
+          });
       });
   };
 };
